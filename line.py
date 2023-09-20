@@ -64,7 +64,6 @@ while True:
         conn.send(str.encode(translation))
         robot_move = False
 
-
     contours, _ = cv2.findContours(mask, cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
         if cv2.contourArea(cnt)>5000:
