@@ -29,6 +29,7 @@ s.bind(('192.168.1.241', 9090))
 s.listen(1)
 conn, addr = s.accept()
 
+
 while True:
     mes = conn.recv(1024)
 
