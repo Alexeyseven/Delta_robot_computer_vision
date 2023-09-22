@@ -8,16 +8,15 @@ import time
 def pass_func(x):
    pass
 
-cv2.namedWindow('frame')
 cv2.namedWindow('mask')
 
 cap = cv2.VideoCapture('Video.mp4')
 #cap = cv2.VideoCapture('http://192.168.43.1:4747/video')
 
-cv2.createTrackbar('HL', 'mask', 11, 255, pass_func)
-cv2.createTrackbar('SL', 'mask', 73, 255, pass_func)
-cv2.createTrackbar('VL', 'mask', 173, 255, pass_func)
-cv2.createTrackbar('HM', 'mask',23, 255, pass_func)
+cv2.createTrackbar('HL', 'mask', 0, 255, pass_func)
+cv2.createTrackbar('SL', 'mask', 50, 255, pass_func)
+cv2.createTrackbar('VL', 'mask', 150, 255, pass_func)
+cv2.createTrackbar('HM', 'mask',70, 255, pass_func)
 cv2.createTrackbar('SM', 'mask', 255, 255, pass_func)
 cv2.createTrackbar('VM', 'mask', 255, 255, pass_func)
 
@@ -57,9 +56,11 @@ while True:
 
     contours, _ = cv2.findContours(mask, cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
-        if cv2.contourArea(cnt) > 500 and cv2.contourArea(cnt) < 2000:
+        if cv2.contourArea(cnt) > 500 and cv2.contourArea(cnt) < 1500:
             [x,y,w,h] = cv2.boundingRect(cnt)
             cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
+            img = frame[y:y+45, x:x+45]
+            cv2.imshow('img', img)
 
     cv2.imshow('segment', frame)
     cv2.imshow('mask', mask)
