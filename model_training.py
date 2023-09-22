@@ -1,22 +1,22 @@
-from keras.utils import to_categorical
-from keras import layers
-from keras import models
+#from keras.utils import to_categorical
+#from keras import layers
+#from keras import models
 import matplotlib.pyplot as plot
 import numpy as np
 import os
 import cv2
 
 
-path1 = 'train_images/good'
-path2 = 'train_images/bad'
+path = 'train_images'
 
-train_images = cv2.imread(f'train_images/good/{os.listdir(path1)[0]}')
+train_images = cv2.imread(f'train_images/{os.listdir(path)[0]}')
 train_images = cv2.cvtColor(train_images, cv2.COLOR_BGR2GRAY)
 train_images = np.expand_dims(train_images, axis=0)
 print(train_images.shape)
 
-for i in os.listdir(path1):
-    img = cv2.imread(f'train_images/good/{i}')
+
+for i in os.listdir(path):
+    img = cv2.imread(f'train_images/{i}')
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     #plot.imshow(img, cmap=plot.cm.binary)
     #plot.show()
@@ -27,17 +27,7 @@ for i in os.listdir(path1):
 train_images = train_images[1:]
 print(train_images.shape)
 
-for i in os.listdir(path2):
-    img = cv2.imread(f'train_images/bad/{i}')
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    #plot.imshow(img, cmap=plot.cm.binary)
-    #plot.show()
-    #if img.shape[0] != 128:
-    #    print(i, img.shape)
-    img = np.expand_dims(img, axis=0)
-    train_images = np.append(train_images, img, axis=0)
-print(train_images.shape)
-
+'''
 train_labels = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -76,7 +66,7 @@ train_images = train_images.astype('float32') / 255
 train_labels = to_categorical(train_labels)
 #test_labels = to_categorical(test_labels)
 print(train_images.shape, train_labels.shape)
-'''
+
 model = models.Sequential()
 
 model.add(layers.Conv2D(32, (3, 3), activation='relu',

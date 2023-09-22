@@ -5,7 +5,7 @@ import os
 import time
 
 
-cap = cv2.VideoCapture('Движение продукта на конвейере.mp4')
+cap = cv2.VideoCapture('Video.mp4')
 #cap = cv2.VideoCapture('http://192.168.43.1:4747/video')
 
 s = socket.socket()
