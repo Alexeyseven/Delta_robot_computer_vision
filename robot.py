@@ -8,8 +8,9 @@ i = 0
 
 while True:
     s.send(str.encode(str(i)))
-    mes = s.recv(1024)
     i += 1
 
     if i == 1000:
         i = 0
+
+    mes = s.recv(1024)
