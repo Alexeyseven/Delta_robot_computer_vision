@@ -3,12 +3,15 @@ import numpy as np
 import socket
 import os
 import time
+import random
 
 
 def pass_func(x):
    pass
 
 cv2.namedWindow('mask')
+cv2.namedWindow('frame')
+
 
 cap = cv2.VideoCapture('Video.mp4')
 #cap = cv2.VideoCapture('http://192.168.43.1:4747/video')
@@ -19,6 +22,13 @@ cv2.createTrackbar('VL', 'mask', 150, 255, pass_func)
 cv2.createTrackbar('HM', 'mask',70, 255, pass_func)
 cv2.createTrackbar('SM', 'mask', 255, 255, pass_func)
 cv2.createTrackbar('VM', 'mask', 255, 255, pass_func)
+
+cv2.createTrackbar('dp', 'frame', 350, 1000, pass_func)
+cv2.createTrackbar('minDist', 'frame', 16, 100, pass_func)
+cv2.createTrackbar('param1', 'frame', 10, 500, pass_func)
+cv2.createTrackbar('param2', 'frame', 2, 100, pass_func)
+cv2.createTrackbar('minRadius', 'frame', 18, 100, pass_func)
+cv2.createTrackbar('maxRadius', 'frame', 28, 200, pass_func)
 
 s = socket.socket()
 s.bind(('127.0.0.1', 9090))
@@ -40,6 +50,13 @@ while True:
     sm = cv2.getTrackbarPos('SM','mask')
     vm = cv2.getTrackbarPos('VM','mask')
 
+    c_dp = cv2.getTrackbarPos('dp','frame')
+    c_minDist = cv2.getTrackbarPos('minDist','frame')
+    c_param1 = cv2.getTrackbarPos('param1','frame')
+    c_param2 = cv2.getTrackbarPos('param2','frame')
+    c_minRadius = cv2.getTrackbarPos('minRadius','frame')
+    c_maxRadius = cv2.getTrackbarPos('maxRadius','frame')
+
     hsv_min = np.array((hl, sl, vl), np.uint8)
     hsv_max = np.array((hm, sm, vm), np.uint8)
 
@@ -54,15 +71,18 @@ while True:
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, hsv_min, hsv_max)
 
-    contours, _ = cv2.findContours(mask, cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
-    for cnt in contours:
-        if cv2.contourArea(cnt) > 500 and cv2.contourArea(cnt) < 1500:
-            [x,y,w,h] = cv2.boundingRect(cnt)
-            cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
-            img = frame[y:y+45, x:x+45]
-            cv2.imshow('img', img)
+    circles = cv2.HoughCircles(mask, cv2.HOUGH_GRADIENT_ALT, dp = (c_dp/100), minDist = c_minDist, param1 = c_param1, 
+                            param2 = (c_param2/100), minRadius = c_minRadius, maxRadius = c_maxRadius)
 
-    cv2.imshow('segment', frame)
+    if circles is not None:
+        circles = np.round(circles[0, :]).astype("int")
+
+        for (x, y, r) in circles:
+            cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
+            
+            
+
+    cv2.imshow('frame', frame)
     cv2.imshow('mask', mask)
     time.sleep(0.1)
     
