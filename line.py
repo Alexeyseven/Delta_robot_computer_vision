@@ -3,7 +3,6 @@ import numpy as np
 import socket
 import os
 import time
-import random
 
 
 def pass_func(x):
@@ -80,8 +79,6 @@ while True:
         for (x, y, r) in circles:
             cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
             
-            
-
     cv2.imshow('frame', frame)
     cv2.imshow('mask', mask)
     time.sleep(0.1)
