@@ -3,6 +3,7 @@ import numpy as np
 import socket
 import os
 import time
+import tensorflow as tf
 
 
 def pass_func(x):
@@ -11,6 +12,7 @@ def pass_func(x):
 cv2.namedWindow('mask')
 cv2.namedWindow('frame')
 
+model = tf.keras.saving.load_model("myaphly_model_local.keras")
 
 cap = cv2.VideoCapture('Video.mp4')
 #cap = cv2.VideoCapture('http://192.168.43.1:4747/video')
@@ -69,19 +71,36 @@ while True:
     mask = frame.copy()
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, hsv_min, hsv_max)
+    
+    if j == 20:
+       circles = cv2.HoughCircles(mask, cv2.HOUGH_GRADIENT_ALT, 
+                                  dp = (c_dp/100), 
+                                  minDist = c_minDist, 
+                                  param1 = c_param1, 
+                                  param2 = (c_param2/100), 
+                                  minRadius = c_minRadius, 
+                                  maxRadius = c_maxRadius)
 
-    circles = cv2.HoughCircles(mask, cv2.HOUGH_GRADIENT_ALT, dp = (c_dp/100), minDist = c_minDist, param1 = c_param1, 
-                            param2 = (c_param2/100), minRadius = c_minRadius, maxRadius = c_maxRadius)
+       if circles is not None:
+           circles = np.round(circles[0, :]).astype("int")
 
-    if circles is not None:
-        circles = np.round(circles[0, :]).astype("int")
-
-        for (x, y, r) in circles:
-            cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
+           for (x, y, r) in circles:
+               if y + 24 < frame.shape[0] and y - 24 > 0 and x + 24 < frame.shape[1] and x -24 > 0:
+                  img = frame[y-24:y+24, x-24:x+24]
+                  img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                  img = np.expand_dims(img, axis = 0)
+                  predict = model.predict(img)
+                  if predict[0][0] > 0.5:
+                     cv2.circle(frame, (x, y), r, (0, 0, 255), 4)
+                  else:
+                     cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
+       j = 0              
             
     cv2.imshow('frame', frame)
     cv2.imshow('mask', mask)
+
     time.sleep(0.1)
+    j += 1
     
     conn.send(b'none')
 

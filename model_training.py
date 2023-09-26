@@ -8,8 +8,8 @@ import cv2
 
 train_labels = []
 
-path1 = 'Data_good'
-path2 = 'Data_bad'
+path1 = 'train_images/good'
+path2 = 'train_images/bad'
 
 train_images = cv2.imread(f'{path1}/{os.listdir(path1)[0]}')
 train_images = cv2.cvtColor(train_images, cv2.COLOR_BGR2GRAY)
@@ -38,7 +38,7 @@ print(train_images.shape)
 train_labels = np.array(train_labels)
 print(train_labels.shape)
 
-train_images = train_images.reshape((3238, 48, 48, 1))
+train_images = train_images.reshape((3689, 48, 48, 1))
 train_images = train_images.astype('float32') / 255
 train_labels = to_categorical(train_labels)
 print(train_images.shape, train_labels.shape)
@@ -60,7 +60,7 @@ model.summary()
 model.compile(optimizer='rmsprop',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
-model.fit(train_images, train_labels, epochs=10, batch_size=20)
+model.fit(train_images, train_labels, epochs=10, batch_size=40)
 
 #model.evaluate(test_images, test_labels)
 

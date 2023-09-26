@@ -146,5 +146,6 @@ dmypy.json
 .mypy_cache
 
 # папки со статикой и медиа
-/train_images
+.train_images/
+,test_images/
 *.mp4

@@ -6,14 +6,16 @@ from tkinter import *
 import tensorflow as tf
 
 i = 0
+path = 'test_images/'
+
 #model = models.load_model('myaphly_model_local.h5')
 model = tf.keras.saving.load_model("myaphly_model_local.keras")
 
 
 def predict():
     global i
-    j = os.listdir('test_images/')[i]
-    img = cv2.imread(f'test_images/{j}')
+    j = os.listdir(path)[i]
+    img = cv2.imread(f'{path}{j}')
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     plot.imshow(img, cmap=plot.cm.binary)
     plot.show()
@@ -25,3 +27,4 @@ def predict():
 
 root = Tk()
 Button(text='predict', command = predict).place(x=10, y=10)
+input('Done\n')
