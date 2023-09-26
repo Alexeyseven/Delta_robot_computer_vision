@@ -3,6 +3,7 @@ import numpy as np
 import socket
 import os
 import time
+import random
 
 
 def pass_func(x):
@@ -27,7 +28,7 @@ cv2.createTrackbar('minDist', 'frame', 16, 100, pass_func)
 cv2.createTrackbar('param1', 'frame', 10, 500, pass_func)
 cv2.createTrackbar('param2', 'frame', 2, 100, pass_func)
 cv2.createTrackbar('minRadius', 'frame', 18, 100, pass_func)
-cv2.createTrackbar('maxRadius', 'frame', 28, 200, pass_func)
+cv2.createTrackbar('maxRadius', 'frame', 24, 200, pass_func)
 
 s = socket.socket()
 s.bind(('127.0.0.1', 9090))
@@ -77,10 +78,15 @@ while True:
         circles = np.round(circles[0, :]).astype("int")
 
         for (x, y, r) in circles:
-            #cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
+            r1 = random.randint(-12, 12)
+            r2 = random.randint(0, 1)
+            if r2 == 0:
+               cv2.circle(frame, (x, y), r, (0, 0, 0), 1)
             if y + 24 < frame.shape[0] and y - 24 > 0 and x + 24 < frame.shape[1] and x -24 > 0:
+                if r2 == 1:
+                  cv2.circle(frame, (x-r1, y-r1), r-18, (0, 0, 0), 1)
                 #cv2.imshow('obj', frame[y-24:y+24, x-24:x+24])
-                cv2.imwrite(f'{j}.jpg', frame[y-24:y+24, x-24:x+24])
+                cv2.imwrite(f'train_images/bad/{j}.jpg', frame[y-24:y+24, x-24:x+24])
                 j += 1
             
             
