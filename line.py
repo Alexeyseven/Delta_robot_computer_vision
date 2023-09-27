@@ -39,16 +39,24 @@ conn, addr = s.accept()
 
 j = 0
 snap_x = 390
-buffer = []
+stack = []
+robot_move = False
+first_iter = True
 
 
 while True:
    mes = conn.recv(1024)
 
-   if mes == b'robot move' and len(buffer) > 0:
+   if mes == b'robot move':
+      robot_move = True
+   else:
+      i = int(mes.decode('utf-8'))   
+
+   if robot_move and len(stack) > 0:
       print('robot move')
-      send_mes = buffer.pop(0)
+      send_mes = stack.pop(0)
       send_mes = str.encode(str(send_mes[0]) + ',' + str(send_mes[1]))
+      robot_move = False
    else:
       send_mes = b'none'   
 
@@ -101,8 +109,14 @@ while True:
                predict = model.predict(img)
                if predict[0][0] > 0.5:
                   cv2.circle(frame, (x, y), r, (0, 0, 255), 4)
-                  buffer.append([x, y])
-                  print(buffer)
+                  if i - j > 100 or first_iter:
+                     delay = 100
+                     first_iter = False
+                  else:
+                     delay = i - j
+                  stack.append([delay, y])
+                  print(stack)
+                  j = i
                else:
                   cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
 

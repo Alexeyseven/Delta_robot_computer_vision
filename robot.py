@@ -9,7 +9,7 @@ i = 0
 j = 0
 
 while True:
-    if i >= j + 5:
+    if i == (j + 5):
         s.send(b'robot move')
         print('robot move')
     else:
@@ -25,3 +25,4 @@ while True:
     if mes != b'none':
         print(mes)
         j = i
+        
