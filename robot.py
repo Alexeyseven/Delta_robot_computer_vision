@@ -7,11 +7,18 @@ print('Robot ready')
 
 i = 0
 j = 0
+delay = 5
+y = 0
+y_prev = 0
 
 while True:
-    if i == (j + 5):
+    if i == j + delay:
         s.send(b'robot move')
-        print('robot move')
+        if y != y_prev or delay > 0:
+            if delay == 0:
+                delay = 2
+            print('robot move, y = ', y, 'delay = ', delay)
+            y_prev = y
     else:
         s.send(str.encode(str(i)))
         
@@ -23,6 +30,8 @@ while True:
     mes = s.recv(1024)
 
     if mes != b'none':
-        print(mes)
+        line = mes.decode('utf-8').split(',')
+        delay = int(line[0])
+        y = int(line[1])
         j = i
         

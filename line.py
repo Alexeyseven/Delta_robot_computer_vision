@@ -4,10 +4,21 @@ import socket
 import os
 import time
 import tensorflow as tf
+import random
+from tkinter import *
 
 
 def pass_func(x):
    pass
+
+
+def transport_start():
+   pass
+
+
+def transport_stop():
+   pass
+
 
 cv2.namedWindow('mask')
 cv2.namedWindow('frame')
@@ -43,6 +54,10 @@ stack = []
 robot_move = False
 first_iter = True
 
+root = Tk()
+root.geometry('1000x40+40+650')
+Button(text='Транспорт старт', command=transport_start, height=2).place(x=0, y=0)
+Button(text='Транспорт стоп', command=transport_stop, height=2).place(x=100, y=0)
 
 while True:
    mes = conn.recv(1024)
@@ -88,7 +103,7 @@ while True:
    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
    mask = cv2.inRange(hsv, hsv_min, hsv_max)
 
-   cv2.line(frame, (snap_x, 0), (snap_x, frame.shape[1]), (255, 0, 0), 3)
+   #cv2.line(frame, (snap_x, 0), (snap_x, frame.shape[1]), (255, 0, 0), 3)
 
    circles = cv2.HoughCircles(mask, cv2.HOUGH_GRADIENT_ALT, 
                               dp = (c_dp/100), 
@@ -100,10 +115,14 @@ while True:
 
    if circles is not None:
       circles = np.round(circles[0, :]).astype("int")
+      r1 = random.randint(0, 48)
+      r2 = random.randint(-12, 12)
       for (x, y, r) in circles:
          if abs(snap_x - x) <= 10:
             if y + 24 < frame.shape[0] and y - 24 > 0 and x + 24 < frame.shape[1] and x -24 > 0:
                img = frame[y-24:y+24, x-24:x+24]
+               if r1 == 4:
+                  cv2.circle(frame, (x-r2, y-r2), 4, (0, 0, 0), 1)
                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                img = np.expand_dims(img, axis = 0)
                predict = model.predict(img)
@@ -120,12 +139,16 @@ while True:
                else:
                   cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
 
+   cv2.line(frame, (snap_x, 0), (snap_x, frame.shape[1]), (255, 0, 0), 3)
+
    cv2.imshow('frame', frame)
    cv2.imshow('mask', mask)
 
    time.sleep(0.05)
     
    conn.send(send_mes)
+
+   root.update()
 
    if cv2.waitKey(1) & 0xFF == ord('q'):
       break
