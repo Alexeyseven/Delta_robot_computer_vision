@@ -5,10 +5,20 @@ import os
 import time
 import tensorflow as tf
 import random
+from tkinter import *
 
 
 def pass_func(x):
    pass
+
+
+def transport_start():
+   pass
+
+
+def transport_stop():
+   pass
+
 
 cv2.namedWindow('mask')
 cv2.namedWindow('frame')
@@ -44,6 +54,10 @@ stack = []
 robot_move = False
 first_iter = True
 
+root = Tk()
+root.geometry('1000x40+40+650')
+Button(text='Транспорт старт', command=transport_start, height=2).place(x=0, y=0)
+Button(text='Транспорт стоп', command=transport_stop, height=2).place(x=100, y=0)
 
 while True:
    mes = conn.recv(1024)
@@ -133,6 +147,8 @@ while True:
    time.sleep(0.05)
     
    conn.send(send_mes)
+
+   root.update()
 
    if cv2.waitKey(1) & 0xFF == ord('q'):
       break

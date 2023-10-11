@@ -15,6 +15,8 @@ while True:
     if i == j + delay:
         s.send(b'robot move')
         if y != y_prev or delay > 0:
+            if delay == 0:
+                delay = 2
             print('robot move, y = ', y, 'delay = ', delay)
             y_prev = y
     else:
