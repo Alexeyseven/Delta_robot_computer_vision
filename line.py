@@ -2,11 +2,16 @@ import cv2
 import numpy as np
 import time
 import tensorflow as tf
+import os
+import socket
+import random
 
 
 def pass_func(x):
    pass
 
+
+j = 0
 
 cv2.namedWindow('mask')
 cv2.namedWindow('frame')
@@ -30,10 +35,18 @@ cv2.createTrackbar('param2', 'frame', 2, 100, pass_func)
 cv2.createTrackbar('minRadius', 'frame', 18, 100, pass_func)
 cv2.createTrackbar('maxRadius', 'frame', 28, 200, pass_func)
 
-stack = []
+s = socket.socket()
+s.bind(('127.0.0.1', 9090))
+s.listen(1)
+os.system('start cmd /k python robot.py')
+conn, addr = s.accept()
 
 
 while True:
+   data = conn.recv(50)
+   i = int(data.decode('utf-8'))
+   print(i)
+
    hl = cv2.getTrackbarPos('HL','mask')
    sl = cv2.getTrackbarPos('SL','mask')
    vl = cv2.getTrackbarPos('VL','mask')
@@ -72,19 +85,26 @@ while True:
 
    if circles is not None:
       circles = np.round(circles[0, :]).astype("int")
-      for (x, y, r) in circles:
-         if y + 24 < frame.shape[0] and y - 24 > 0 and x + 24 < frame.shape[1] and x -24 > 0:
-            img = frame[y-24:y+24, x-24:x+24]
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            img = np.expand_dims(img, axis = 0)
-            predict = model.predict(img)
-            if predict[0][0] > 0.5:
-               cv2.circle(frame, (x, y), r, (0, 0, 255), 4)
-            else:
-               cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
-
-   cv2.imshow('frame', frame)
+      if i - j == 40:
+         for (x, y, r) in circles:
+            r1 = random.randint(0, 12)
+            if y + 24 < frame.shape[0] and y - 24 > 0 and x + 24 < frame.shape[1] and x -24 > 0:
+               img = frame[y-24:y+24, x-24:x+24]
+               if r1 == 4:
+                  cv2.circle(frame, (x-2, y-2), 4, (0, 0, 0), 1)
+               img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+               img = np.expand_dims(img, axis = 0)
+               predict = model.predict(img)
+               if predict[0][0] > 0.5:
+                  cv2.circle(frame, (x, y), r, (0, 0, 255), 4)
+               else:
+                  cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
+         cv2.imshow('frame', frame)
+         j = i  
+   
    cv2.imshow('mask', mask)
+
+   conn.send(b'ok')
 
    time.sleep(0.05)
 
