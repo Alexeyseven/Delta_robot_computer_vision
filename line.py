@@ -47,7 +47,7 @@ cv2.createTrackbar('maxRadius', 'frame', 28, 200, pass_func)
 s = socket.socket()
 s.bind(('192.168.1.241', 502))
 s.listen(1)
-#os.system('start cmd /k python robot.py')
+os.system('start cmd /k python robot.py')
 conn, addr = s.accept()
 conn.settimeout(0.05)
 
