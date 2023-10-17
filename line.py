@@ -52,6 +52,7 @@ conn, addr = s.accept()
 conn.settimeout(0.05)
 
 snap = False
+stack = []
 min_vis = 0
 max_vis = 400
 min_rob = -480
@@ -67,6 +68,13 @@ while True:
       else:
          print('robot say', mes)   
    except socket.timeout: 
+
+      if len(stack) > 0:
+         send_mes = stack.pop(0)
+         send_mes = str.encode(str(send_mes[0]) + ',' + str(send_mes[1]) + '\r\n')
+      else:
+         send_mes = b'none\r\n'
+
 
       hl = cv2.getTrackbarPos('HL','mask')
       sl = cv2.getTrackbarPos('SL','mask')
@@ -122,14 +130,15 @@ while True:
                   predict = model.predict(img)
                   if predict[0][0] > 0.5:
                      cv2.circle(frame, (x, y), r, (0, 0, 255), 4)
+                     stack.append([x, y])
                   else:
                      cv2.circle(frame, (x, y), r, (0, 255, 0), 4)
-            snap = False   
+            snap = False
 
       cv2.imshow('frame', frame)
       cv2.imshow('mask', mask)
       
-      conn.send(b'none\r\n')
+      conn.send(send_mes)
 
 
    if cv2.waitKey(1) & 0xFF == ord('q'):

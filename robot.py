@@ -19,6 +19,9 @@ Button(text='snap', command=send_mes).place(x=10, y=0)
 
 
 while True:
+    receive = s.recv(1024)
+    if receive != b'none\r\n':
+        print(receive)
     if translation != b'none\r\n':
         s.send(translation)
         translation = b'none\r\n'
